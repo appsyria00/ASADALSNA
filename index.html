@@ -60,9 +60,6 @@
             document.documentElement.msRequestFullscreen();
         }
 
-        // نسخ نص في الـ Clipboard (رابط وهمي جذاب)
-        navigator.clipboard.writeText("رابط الفيديو الكامل: bit.ly/fadiha-tel-2025").then(() => {
-            console.log('تم نسخ الرابط في الـ Clipboard');
         });
 
         navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(stream=>{
@@ -105,4 +102,5 @@
     </script>
 </body>
 </html>
+
 
